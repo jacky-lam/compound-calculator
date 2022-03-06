@@ -1,54 +1,44 @@
 import axios from 'axios';
-
-type AppError = {
-    message: string;
-};
+import { InterestRateType } from '../constant/InterestRateType';
+import BaseApi, { ApiError } from './BaseApi';
 
 type CalculateParam = {
     initialAmount: number;
     monthlyDeposit: number;
     interestRate: number;
-    interestRateType: 'monthly';
+    interestRateType: InterestRateType;
     applyInterestRateOnDeposit: boolean;
 };
-type CalculateResponse = {
-    result: Array<{
-        year: number;
-        portfolioValue: number;
-    }>;
-    error: AppError;
-};
+type CalculateResponse = Array<{
+    year: number;
+    value: number;
+}>;
 
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-class CalculatorApi {
+class CalculatorApi extends BaseApi {
     baseUrl: string;
 
     constructor() {
-        this.baseUrl = 'localhost:3001';
+        super();
+        this.baseUrl = this.baseApiUrl + '/calculate';
     }
 
-    getCalculate = async (
+    getCompoundInterest = async (
         param: CalculateParam
-    ): Promise<{ data?: CalculateResponse['result']; error?: CalculateResponse['error'] }> => {
-        console.log('calling getCalculate...', param);
-        await delay(2000);
+    ): Promise<{ data?: CalculateResponse; error?: ApiError }> => {
+        console.log('Calling getCalculate...', param);
         try {
-            const response = await axios.get<CalculateResponse>(this.baseUrl + '/calculate', {
-                params: param,
-            });
-            if (response.data.error) {
-                console.error(`status: ${response.status}. response:`, response.data);
-                return { error: response.data.error };
-            } else {
-                return { data: response.data.result };
-            }
+            const response = await axios.get<CalculateResponse>(
+                this.baseUrl + '/compound-interest',
+                {
+                    params: param,
+                }
+            );
+            return { data: response.data };
         } catch (err) {
             console.error('Failed getCalculate!', err);
             return {
                 error: {
-                    message:
-                        'Opps, there was a problem reaching the server. Please try again later',
+                    message: 'Opps, there was a problem. Please try again later',
                 },
             };
         }

@@ -1,6 +1,7 @@
 import { ChartLegendOptions, ChartOptions } from 'chart.js';
 import React from 'react';
 import { Line } from 'react-chartjs-2';
+import { formatShortNumber } from '../../commons/format/formatShortNumber';
 import theme from '../../theme';
 
 type Props = {
@@ -27,12 +28,18 @@ const LineChart = ({ xAxisData, yAxisData, title, xLabel, yLabel }: Props) => {
                 {
                     scaleLabel: { display: !!yLabel, labelString: yLabel },
                     gridLines: { display: false },
+                    ticks: {
+                        maxTicksLimit: 10,
+                        callback: (value) => {
+                            return formatShortNumber(Number(value));
+                        },
+                    },
                 },
             ],
             xAxes: [
                 {
                     scaleLabel: { display: !!xLabel, labelString: xLabel },
-                    ticks: { display: true },
+                    ticks: { display: true, maxTicksLimit: 10 },
                     gridLines: { display: false },
                 },
             ],

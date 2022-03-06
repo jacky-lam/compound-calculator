@@ -10,7 +10,7 @@ export const Homepage: React.FC = () => {
     const [formValues, setFormValues] = React.useState<FormValues>({
         initialAmount: 100,
         monthlyDeposit: 50,
-        interestRate: 0.1,
+        interestRate: 0.01,
         interestRateType: 'monthly',
         applyInterestRateOnDeposit: true,
     });
@@ -26,7 +26,7 @@ export const Homepage: React.FC = () => {
 
         async function calculate() {
             setChartState({ loading: true, error: '' });
-            const response = await CalculatorApi.getCalculate({
+            const response = await CalculatorApi.getCompoundInterest({
                 initialAmount: formValues.initialAmount,
                 monthlyDeposit: formValues.monthlyDeposit,
                 interestRate: formValues.interestRate,

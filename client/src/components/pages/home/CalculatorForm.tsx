@@ -1,16 +1,24 @@
 import React from 'react';
 import { Box, FormLabel, HStack, NumberInput, NumberInputField, Select } from '@chakra-ui/react';
+import {
+    InterestRateType,
+    interestRateTypes,
+    parseInterestRateType,
+} from '../../../commons/constant/InterestRateType';
 
 export type FormValues = {
     initialAmount: number;
     monthlyDeposit: number;
     interestRate: number;
-    interestRateType: 'monthly';
+    interestRateType: InterestRateType;
     applyInterestRateOnDeposit: boolean;
 };
 
 const formatPercentage = (value: number): number => value * 100;
 const parsePercentage = (value: number): number => value / 100;
+const capitalise = (value: string): string => {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+};
 
 export const Form: React.FC<{
     value: FormValues;
@@ -25,7 +33,7 @@ export const Form: React.FC<{
                 }}
                 value={value.initialAmount}
                 min={0}
-                max={1_000_000_000_000}
+                max={1_000_000}
                 precision={2}
             >
                 <NumberInputField />
@@ -37,7 +45,7 @@ export const Form: React.FC<{
                 }}
                 value={value.monthlyDeposit}
                 min={0}
-                max={1_000_000_000}
+                max={1_000_000}
                 precision={2}
             >
                 <NumberInputField />
@@ -60,13 +68,23 @@ export const Form: React.FC<{
                     width="auto"
                     textAlign="right"
                     value={value.interestRateType}
-                    onChange={() => {
-                        console.log('changed interest rate type!');
+                    onChange={(event) => {
+                        if (event) {
+                            onChangeValues({
+                                ...value,
+                                interestRateType: parseInterestRateType(event.target.value),
+                            });
+                        }
                     }}
                 >
-                    <option value="monthly">Monthly</option>
+                    {interestRateTypes.map((interestRateType) => (
+                        <option key={interestRateType} value={interestRateType}>
+                            {capitalise(interestRateType)}
+                        </option>
+                    ))}
                 </Select>
             </HStack>
+            <FormLabel paddingTop={5}>Compound Intervals: Monthly</FormLabel>
         </Box>
     );
 };
